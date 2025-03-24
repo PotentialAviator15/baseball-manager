@@ -1,4 +1,5 @@
 from csv_handler import load_players, save_players
+import os
 
 positions = ("C", "1B", "2B", "3B", "SS", "LF", "CF", "RF", "P")
 
@@ -20,6 +21,8 @@ def menu():
     print("\nPOSITIONS")
     print(" ".join(positions))
     print("=" * 63)
+    if not os.path.isfile('players.csv'):
+        print("Team data file could not be found.\nYou can create a new one if you want.")
 
 def display_lineup():
     players = load_players()
@@ -31,16 +34,24 @@ def display_lineup():
 def add():
     players = load_players()
     name = input("Player's name: ")
-    at_bats = int(input("Official number of at-bats: "))
-    if at_bats < 0:
-        print("At-bats cannot be negative. Exiting program.")
+    try:
+        at_bats = int(input("Official number of at-bats: "))
+        if at_bats < 0:
+            print("At-bats cannot be negative. Exiting program.")
+            return
+    except ValueError:
+        print("Invalid input. Please enter a number for at-bats. Exiting program.")
         return
-    hits = int(input("Number of hits: "))
-    if hits < 0:
-        print("Invalid number of hits. Exiting program.")
-        return
-    elif hits > at_bats:
-        print("Hits cannot be greater than at-bats. Exiting program.")
+    try:
+        hits = int(input("Number of hits: "))
+        if hits < 0:
+            print("Invalid number of hits. Exiting program.")
+            return
+        elif hits > at_bats:
+            print("Hits cannot be greater than at-bats. Exiting program.")
+            return
+    except ValueError:
+        print("Invalid input. Please enter a number for hits. Exiting program.")
         return
     playerpos = input("Position of the player: ")
     if playerpos not in positions:
@@ -55,73 +66,89 @@ def add():
 def remove():
     players = load_players()
     display_lineup()
-    player_number = int(input("Enter the player number to remove: "))
-    if 1 <= player_number <= len(players):
-        removed_player = players.pop(player_number - 1)
-        save_players(players)
-        print(f"{removed_player[0]} was removed.")
-    else:
-        print("Invalid player number. Please try again.")
+    try:
+        player_number = int(input("Enter the player number to remove: "))
+        if 1 <= player_number <= len(players):
+            removed_player = players.pop(player_number - 1)
+            save_players(players)
+            print(f"{removed_player[0]} was removed.")
+        else:
+            print("Invalid player number. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
 def move():
     players = load_players()
     display_lineup()
-    player_number = int(input("Enter the player number to move: "))
-    if 1 <= player_number <= len(players):
-        new_position = int(input("Enter the new position for the player: "))
-        if 1 <= new_position <= len(players):
-            player = players.pop(player_number - 1)
-            players.insert(new_position - 1, player)
-            save_players(players)
-            print(f"{player[0]} has been moved to position {new_position}.")
+    try:
+        player_number = int(input("Enter the player number to move: "))
+        if 1 <= player_number <= len(players):
+            new_position = int(input("Enter the new position for the player: "))
+            if 1 <= new_position <= len(players):
+                player = players.pop(player_number - 1)
+                players.insert(new_position - 1, player)
+                save_players(players)
+                print(f"{player[0]} has been moved to position {new_position}.")
+            else:
+                print("Invalid new position. Please try again.")
         else:
-            print("Invalid new position. Please try again.")
-    else:
-        print("Invalid player number. Please try again.")
+            print("Invalid player number. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
 def editstats():
     players = load_players()
     display_lineup()
-    player_number = int(input("Enter the player number to edit stats: "))
-    if 1 <= player_number <= len(players):
-        at_bats = int(input("Enter the new number of at-bats: "))
-        if at_bats < 0:
-            print("At-bats cannot be negative. Exiting function.")
-            return
-        hits = int(input("Enter the new number of hits: "))
-        if hits < 0:
-            print("Invalid number of hits. Exiting function.")
-            return
-        elif hits > at_bats:
-            print("Hits cannot be greater than at-bats. Exiting function.")
-            return
-        players[player_number - 1][2] = at_bats
-        players[player_number - 1][3] = hits
-        players[player_number - 1][4] = calculate(players[player_number - 1][0], hits, at_bats)
-        save_players(players)
-        print(f"{players[player_number - 1][0]}'s stats have been updated.")
-    else:
-        print("Invalid player number. Please try again.")
+    try:
+        player_number = int(input("Enter the player number to edit stats: "))
+        if 1 <= player_number <= len(players):
+            at_bats = int(input("Enter the new number of at-bats: "))
+            if at_bats < 0:
+                print("At-bats cannot be negative. Exiting function.")
+                return
+            hits = int(input("Enter the new number of hits: "))
+            if hits < 0:
+                print("Invalid number of hits. Exiting function.")
+                return
+            elif hits > at_bats:
+                print("Hits cannot be greater than at-bats. Exiting function.")
+                return
+            players[player_number - 1][2] = at_bats
+            players[player_number - 1][3] = hits
+            players[player_number - 1][4] = calculate(players[player_number - 1][0], hits, at_bats)
+            save_players(players)
+            print(f"{players[player_number - 1][0]}'s stats have been updated.")
+        else:
+            print("Invalid player number. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
 def editpos():
     players = load_players()
     display_lineup()
-    player_number = int(input("Player number: "))
-    if 1 <= player_number <= len(players):
-        new_position = input("New player position: ")
-        if new_position in positions:
-            players[player_number - 1][1] = new_position
-            save_players(players)
-            print(f"{players[player_number - 1][0]}'s position has been updated to {new_position}.")
+    try:
+        player_number = int(input("Player number: "))
+        if 1 <= player_number <= len(players):
+            new_position = input("New player position: ")
+            if new_position in positions:
+                players[player_number - 1][1] = new_position
+                save_players(players)
+                print(f"{players[player_number - 1][0]}'s position has been updated to {new_position}.")
+            else:
+                print(f"{new_position} is not a valid position. Position names are case sensitive.")
         else:
-            print(f"{new_position} is not a valid position. Position names are case sensitive.")
-    else:
-        print("Invalid player number. Please try again.")
+            print("Invalid player number. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
 def main():
     while True:
         menu()
-        menu_option = int(input("Menu option:  "))
+        try:
+            menu_option = int(input("Menu option:  "))
+        except ValueError:
+            print("Not a valid option. Please try again.")
+            continue
         if menu_option == 1:
             display_lineup()
         elif menu_option == 2:
