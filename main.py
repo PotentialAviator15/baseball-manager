@@ -5,31 +5,36 @@ positions = ("C", "1B", "2B", "3B", "SS", "LF", "CF", "RF", "P")
 
 def calculate(name, hits, at_bats):
     batting_average = hits / at_bats if at_bats > 0 else 0.0
-    return round(batting_average, 3)
+    return f"{batting_average:.3f}"
 
 def menu():
     print("=" * 63)
-    print("Baseball Team Manager")
-    print("MENU OPTIONS")
-    print("1 - Display lineup")
-    print("2 - Add player")
-    print("3 - Remove player")
-    print("4 - Move player")
-    print("5 - Edit player position")
-    print("6 - Edit player stats")
-    print("7 - Exit program")
-    print("\nPOSITIONS")
-    print(" ".join(positions))
+    print(f"{'Baseball Team Manager':^63}")
+    print("=" * 63)
+    print(f"{'MENU OPTIONS':^63}")
+    print("1 - Display lineup".center(63))
+    print("2 - Add player".center(63))
+    print("3 - Remove player".center(63))
+    print("4 - Move player".center(63))
+    print("5 - Edit player position".center(63))
+    print("6 - Edit player stats".center(63))
+    print("7 - Exit program".center(63))
+    print("\nPOSITIONS".center(63))
+    print(" ".join(positions).center(63))
     print("=" * 63)
     if not os.path.isfile('players.csv'):
-        print("Team data file could not be found.\nYou can create a new one if you want.")
+        print("Team data file could not be found.".center(63))
+        print("You can create a new one if you want.".center(63))
 
 def display_lineup():
     players = load_players()
     print(f"{'':<3}{'Player':<10}{'POS':<8}{'AB':<8}{'H':<8}{'AVG':<8}")
     print("-" * 55)
     for idx, player in enumerate(players, start=1):
-        print(f"{idx:<3}{player[0]:<10}{player[1]:<8}{player[2]:<8}{player[3]:<8}{player[4]:<8}")
+        if len(player) == 5:  
+            print(f"{idx:<3}{player[0]:<10}{player[1]:<8}{player[2]:<8}{player[3]:<8}{player[4]:<8}")
+        else:
+            print(f"Error: Player data is incomplete for player at index {idx}.")
 
 def add():
     players = load_players()
@@ -165,6 +170,7 @@ def main():
             print("Bye!")
             break
         else:
-            print("Invalid option. Please choose a valid menu option.")
+            print("Invalid option. Please choose a valid menu option. Restaring the program. \n\n\n\n\n\n\n\n\n\n\n")
+            main()
 
 main()

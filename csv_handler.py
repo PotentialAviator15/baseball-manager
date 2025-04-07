@@ -1,7 +1,6 @@
 import csv
 import os
 
-
 def load_players():
     players = []
     if not os.path.isfile('players.csv'):
